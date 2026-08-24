@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apna AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+    }
+
+    .app {
+      max-width: 600px;
+      height: 100vh;
+      margin: auto;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    #chat {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 14px;
+      line-height: 1.5;
+    }
+
+    .user {
+      margin-left: auto;
+      background: #dbeafe;
+      text-align: right;
+    }
+
+    .ai {
+      background: #eeeeee;
+    }
+
+    .input-area {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      gap: 8px;
+    }
+
+    input {
+      flex: 1;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      padding: 13px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #111827;
+      color: white;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+  <header>🤖 Apna AI</header>
+
+  <div id="chat">
+    <div class="message ai">
+      नमस्ते! 👋 मैं Apna AI हूँ। मुझसे कुछ भी पूछो।
+    </div>
+  </div>
+
+  <div class="input-area">
+    <input id="message" type="text" placeholder="कुछ पूछें...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+function sendMessage() {
+  const input = document.getElementById("message");
+  const chat = document.getElementById("chat");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  chat.innerHTML += `
+    <div class="message user">${escapeHtml(text)}</div>
+  `;
+
+  input.value = "";
+
+  setTimeout(() => {
+    chat.innerHTML += `
+      <div class="message ai">
+        🤖 आपका सवाल मिला: "${escapeHtml(text)}"<br><br>
+        मैं अभी Apna AI का शुरुआती version हूँ।
+      </div>
+    `;
+
+    chat.scrollTop = chat.scrollHeight;
+  }, 500);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+document.getElementById("message").addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
+</script>
+
+</body>
+  </html>
