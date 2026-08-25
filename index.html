@@ -102,7 +102,7 @@
 </div>
 
 <script>
-function sendMessage() {
+async function sendMessage() {
   const input = document.getElementById("message");
   const chat = document.getElementById("chat");
   const text = input.value.trim();
@@ -115,16 +115,57 @@ function sendMessage() {
 
   input.value = "";
 
-  setTimeout(() => {
-    chat.innerHTML += `
-      <div class="message ai">
-        🤖 आपका सवाल मिला: "${escapeHtml(text)}"<br><br>
-        मैं अभी Apna AI का शुरुआती version हूँ।
-      </div>
-    `;
+chat.innerHTML += `
+    <div class="message user">
+      ${escapeHtml(text)}
+    </div>
+  `;
+
+  input.value = "";
+
+  chat.innerHTML += `
+    <div class="message ai">
+      🤖 सोच रहा हूँ...
+    </div>
+  `;
+
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text
+      })
+    });
+
+    const data = await response.json();
+
+    const messages = chat.querySelectorAll(".message.ai");
+    const lastMessage = messages[messages.length - 1];
+if (!response.ok) {
+      lastMessage.textContent =
+        "❌ AI से जवाब नहीं मिला: " +
+        (data.error || "Unknown error");
+    } else {
+      lastMessage.textContent =
+        "🤖 " + data.reply;
+    }
 
     chat.scrollTop = chat.scrollHeight;
-  }, 500);
+
+  } catch (error) {
+    const messages = chat.querySelectorAll(".message.ai");
+    const lastMessage = messages[messages.length - 1];
+
+    lastMessage.textContent =
+      "❌ Server से connection नहीं हो पाया";
+
+    chat.scrollTop = chat.scrollHeight;
+  }
 }
 
 function escapeHtml(text) {
